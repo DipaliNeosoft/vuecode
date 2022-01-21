@@ -163,6 +163,7 @@ export default {
     logout(){
         localStorage.removeItem('token');
         localStorage.removeItem('cart');
+        localStorage.removeItem('cnt');
          localStorage.removeItem('total');
         localStorage.removeItem('uid'); 
         this.$store.commit('changeMail')

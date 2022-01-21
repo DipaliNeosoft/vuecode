@@ -3,9 +3,9 @@
     <div class="container">
       <div class="shopper-informations">
         <div class="row">
-          <div class="col-sm-10 clearfix">
+          <div class="col-sm-6 clearfix">
             <div class="bill-to">
-              <p>Bill To</p>
+              <h3>Bill To</h3>
               <div class="form-one">
                 <form>
                   <input
@@ -20,12 +20,30 @@
                     name="name"
                     v-model="user.name"
                   />
+                  <input type="text" name="mobile" v-model="user.mobile" placeholder="Mobile Number" />
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 clearfix">
+            <div class="bill-to">
+              <div class="form-one">
+                <form>
+                
                   <input
                     type="text"
                     placeholder="Address "
                     name="address"
                     v-model="user.address"
                   />
+                    <input type="text" name="state" v-model="user.state" placeholder="State" />
+                      <input type="text" name="city" v-model="user.city" placeholder="city" />
+                  <input
+                    type="text"
+                    v-model="user.pincode"
+                    placeholder="Zip / Postal Code *"
+                  />
+                
                 </form>
               </div>
             </div>
@@ -74,7 +92,7 @@
                   />
                 </div>
               </td>
-              
+
               <td class="cart_total">
                 <p class="cart_total_price">
                   {{ item.price * item.quantity }}
@@ -90,15 +108,17 @@
                   <tr>
                     <td><span>Shipping Charge :</span></td>
                     <td>
-                <span>{{ check() >= 500 ? "Free" : 50 }}</span>
-              </td>
+                      <span>{{ check() >= 500 ? "Free" : 50 }}</span>
+                    </td>
                   </tr>
                   <tr>
                     <td><span>Discount: </span></td>
-                    <td><span>{{discount}}</span></td>
+                    <td>
+                      <span>{{ discount }}</span>
+                    </td>
                   </tr>
                   <tr>
-                    <td> <span>Grand Total:</span> </td>
+                    <td><span>Grand Total:</span></td>
                     <td>
                       <span>{{ carttotal }}</span>
                     </td>
@@ -160,11 +180,11 @@ import { userAddress } from "@/common/Service.js";
 import { order } from "@/common/Service.js";
 import { orderProduct } from "@/common/Service.js";
 import { usedCoupon } from "@/common/Service.js";
-import Paypal from '../components/Paypal.vue';
+import Paypal from "../components/Paypal.vue";
 export default {
   name: "Checkout",
-  components:{
-    Paypal
+  components: {
+    Paypal,
   },
   data() {
     return {
@@ -180,6 +200,10 @@ export default {
         email: "",
         name: "",
         address: "",
+        pincode: "",
+        state: "",
+        city: "",
+        mobile: "",
       },
 
       cod: 0,
@@ -198,14 +222,13 @@ export default {
   },
   created() {
     this.viewCart();
-    // console.log(this.products);
+    
   },
   methods: {
     placeOrder() {
-      let data = { user_id: this.user_id, address: this.user.address };
-
-      //  console.log(data);
-      userAddress(data)
+      let data = { user_id: this.user_id, address: this.user.address,fullname:this.user.name,email:this.user.email,state:this.user.state,mobile:this.user.mobile,pincode:this.user.pincode,city:this.user.city };
+     console.log(data);
+     userAddress(data)
         .then((res) => {
           if (res.data.error == 0) {
             this.address_id = res.data.address_id;
@@ -215,7 +238,7 @@ export default {
               amount: this.carttotal,
               coupon_used: this.coupon_used,
             };
-            // console.log(orderdata);
+            
             if (this.address_id != undefined) {
               order(orderdata).then((res) => {
                 this.order_id = res.data.order_id;
@@ -226,7 +249,7 @@ export default {
                       order_id: this.order_id,
                       product_id: this.products[a].id,
                       quantity: this.products[a].quantity,
-                      total_price: this.carttotal,
+                      total_price: this.products[a].price * this.products[a].quantity,
                     };
                     orderProduct(orderproduct).then((res) => {
                       console.log(res.data.id);
@@ -244,11 +267,12 @@ export default {
                 }
               });
             }
-         
-           localStorage.removeItem('cart');
+
+            localStorage.removeItem("cart");
             localStorage.removeItem("total");
-                this.$store.commit('change')
-                this.$store.commit('cnt')
+             localStorage.removeItem('cnt');
+            this.$store.commit("change");
+            this.$store.commit("cnt");
 
             this.$swal({
               title: "order placed successfully",
@@ -257,7 +281,6 @@ export default {
               timer: 2000,
               buttons: false,
             }).then(() => {
-             
               this.$router.push("/");
             });
           } else {
