@@ -20,7 +20,12 @@
                     name="name"
                     v-model="user.name"
                   />
-                  <input type="text" name="mobile" v-model="user.mobile" placeholder="Mobile Number" />
+                  <input
+                    type="text"
+                    name="mobile"
+                    v-model="user.mobile"
+                    placeholder="Mobile Number"
+                  />
                 </form>
               </div>
             </div>
@@ -29,21 +34,29 @@
             <div class="bill-to">
               <div class="form-one">
                 <form>
-                
                   <input
                     type="text"
                     placeholder="Address "
                     name="address"
                     v-model="user.address"
                   />
-                    <input type="text" name="state" v-model="user.state" placeholder="State" />
-                      <input type="text" name="city" v-model="user.city" placeholder="city" />
+                  <input
+                    type="text"
+                    name="state"
+                    v-model="user.state"
+                    placeholder="State"
+                  />
+                  <input
+                    type="text"
+                    name="city"
+                    v-model="user.city"
+                    placeholder="city"
+                  />
                   <input
                     type="text"
                     v-model="user.pincode"
                     placeholder="Zip / Postal Code *"
                   />
-                
                 </form>
               </div>
             </div>
@@ -129,8 +142,8 @@
           </tfoot>
         </table>
       </div>
-      <div class="row col-sm-3">
-        <div class="payment-options">
+      <div class="row col-sm-5">
+        <!-- <div class="payment-options">
           <h2>Payment Methods:</h2>
           <span>
             <label
@@ -139,6 +152,21 @@
             >
             <Paypal />
           </span>
+        </div> -->
+        <div class=" payment-options">
+          <button class="btn btn-default update" v-on:click="paymentOffline">
+            Cash on delivery
+          </button>
+          <button class="btn btn-default update" v-on:click="paymentOnline">
+            Paypal
+          </button>
+
+          <div class="" v-if="online">
+            <Paypal />
+          </div>
+          <div v-else>
+            <p class="cash">Payment method is select as Cash on Delivery</p>
+          </div>
         </div>
       </div>
       <form @submit.prevent="handleSubmit">
@@ -188,6 +216,7 @@ export default {
   },
   data() {
     return {
+      // online:false,
       user_id: localStorage.getItem("user_id"),
       products: JSON.parse(localStorage.getItem("cart")),
       product_id: 0,
@@ -222,14 +251,29 @@ export default {
   },
   created() {
     this.viewCart();
-    
   },
   methods: {
+    paymentOnline() {
+      this.online = true;
+    },
+    paymentOffline() {
+      this.online = false;
+    },
     placeOrder() {
-      let data = { user_id: this.user_id, address: this.user.address,fullname:this.user.name,email:this.user.email,state:this.user.state,mobile:this.user.mobile,pincode:this.user.pincode,city:this.user.city };
-     console.log(data);
-     userAddress(data)
+      let data = {
+        user_id: this.user_id,
+        address: this.user.address,
+        fullname: this.user.name,
+        email: this.user.email,
+        state: this.user.state,
+        mobile: this.user.mobile,
+        pincode: this.user.pincode,
+        city: this.user.city,
+      };
+      console.log(data);
+      userAddress(data)
         .then((res) => {
+          console.log(res);
           if (res.data.error == 0) {
             this.address_id = res.data.address_id;
             let orderdata = {
@@ -238,7 +282,7 @@ export default {
               amount: this.carttotal,
               coupon_used: this.coupon_used,
             };
-            
+
             if (this.address_id != undefined) {
               order(orderdata).then((res) => {
                 this.order_id = res.data.order_id;
@@ -249,7 +293,8 @@ export default {
                       order_id: this.order_id,
                       product_id: this.products[a].id,
                       quantity: this.products[a].quantity,
-                      total_price: this.products[a].price * this.products[a].quantity,
+                      total_price:
+                        this.products[a].price * this.products[a].quantity,
                     };
                     orderProduct(orderproduct).then((res) => {
                       console.log(res.data.id);
@@ -270,7 +315,7 @@ export default {
 
             localStorage.removeItem("cart");
             localStorage.removeItem("total");
-             localStorage.removeItem('cnt');
+            localStorage.removeItem("cnt");
             this.$store.commit("change");
             this.$store.commit("cnt");
 
@@ -284,7 +329,7 @@ export default {
               this.$router.push("/");
             });
           } else {
-            this.$swal("  something went wrong ", "", "error");
+            this.$swal("something went wrong ", "", "error");
           }
         })
         .catch((error) => {

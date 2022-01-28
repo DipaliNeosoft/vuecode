@@ -32,9 +32,9 @@
                   class="invalid-feedback"
                 >
                 <span v-if="!$v.user.name.required"> Name is required</span>
-                  <span v-if="!$v.user.name.alpha"> Name should contain only letters</span>
+                  <!-- <span v-if="!$v.user.name.alpha"> Name should contain only letters</span> -->
                   <span v-if="!$v.user.name.minLength"> length should be atleast 2</span>
-                  <span v-if="!$v.user.name.maxLength"> length cannot be more than 10 </span>
+                  <span v-if="!$v.user.name.maxLength"> length cannot be more than 20 </span>
                    
                 </div>
               </div>
@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { required, email, alpha,minLength,maxLength,numeric} from "vuelidate/lib/validators";
+import { required, email,minLength,maxLength,numeric} from "vuelidate/lib/validators";
 import {userContact} from '@/common/Service';
 export default {
   name: "Contact",
@@ -165,7 +165,7 @@ export default {
   },
   validations: {
     user: {
-      name: { required,alpha, minLength: minLength(2), maxLength: maxLength(10)},
+      name: { required, minLength: minLength(2), maxLength: maxLength(20)},
       contact: { required , maxLength: maxLength(10),numeric,
       // checkcontact(contact){
       //   const regex=/^[789][0-9]{9}$/;
@@ -181,7 +181,7 @@ export default {
     handleSubmit() {
       this.submitted = true;
          let formData={name:this.user.name,mobile:this.user.contact,email:this.user.email,message:this.user.message};
-
+console.log(formData)
       // stop here if form is invalid
       this.$v.$touch();
       if (this.$v.$invalid) {
@@ -190,10 +190,22 @@ export default {
         userContact(formData)
       .then(res=>{
              if(res.data.error==1){
+                this.$swal({
+                title: "we will come back to you soon......",
+                text: "Redirecting...",
+                icon: "success",
+                timer: 2000,
+                buttons: false,
+              }).then(() => {
                 this.$router.push("/");
+              
+              });
 
             }
+
             else{
+               console.log(res)
+
                this.$swal("something went wrong","","error");  
             }
         })

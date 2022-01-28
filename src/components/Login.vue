@@ -143,7 +143,7 @@ export default {
   justify-content: center;
 }
 span {
-  color: red;
+  color: orange;
 }
 .form-group input {
   background: #f0f0e9;
