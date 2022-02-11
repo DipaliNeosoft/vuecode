@@ -93,8 +93,11 @@ export function orderDetails(id)
     var token = localStorage.getItem('token');
     return axios.get(`${MAIN_URL}orderdetails/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
 }
+export function subscribe(data) {
+    return axios.post(`${MAIN_URL}subscribe`, data);
+}
 
 export default {userLogin,userRegister,userContact,banner,category,categorybyid,product,productDetails,coupon,
     profile,Updateprofile,changePassword,cms,cmsById,wishlist,getWishlist,deletewishlist,
-    userAddress,order,orderProduct,usedCoupon,orderDetails
+    userAddress,order,orderProduct,usedCoupon,orderDetails,subscribe
 };
