@@ -376,8 +376,8 @@ export default {
                   this.carttotal = this.carttotal - this.details.value;
                   this.discount = this.details.value;
                 } else {
-                  this.carttotal = (this.details.value / 100) * this.carttotal;
-                  this.discount = this.details.value;
+                  this.discount = (this.details.value / 100) * this.carttotal;
+                  this.carttotal = this.carttotal - (this.details.value / 100) * this.carttotal;
                 }
                 this.coupon_used = 1;
                 this.$swal("Coupon applied successfully", "", "success");
